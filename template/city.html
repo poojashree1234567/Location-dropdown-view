@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Form</title>
+</head>
+<body>
+    <h2>City Form</h2>
+    <div class="card-body">
+        <form action="{% url 'city' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+                    <label class="form-label" for="country_id"><b>Country Name: </b></label>
+                    <select class="form-control" id="country_id" name="country_id">
+                        <option value="">Select Country</option>
+                        {% for country in countries %}
+                        <option value="{{ country.id }}" data-state-available="{{ country.is_state_available }}">{{ country.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div><br>
+                <div class="col-6">
+                <div class="col-md-6" id="state-container" style="display: none;">
+                    <label class="form-label" for="state_id"><b>State</b></label>
+                    <select class="form-control" id="state_id" name="state_id">
+                        <option value="">Select State</option>
+                    </select>
+                </div></div>
+            </div>
+            
+                    <br>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="city_name"><b>City Name:</b></label>
+                            <input type="text" class="form-control" id="city_name" name="city_name" placeholder="City name" />
+                        </div>
+                        <br>
+                        <div class="col-md-6">
+                            <label class="form-label" for="city_slug"><b>Slug:</b></label>
+                            <input type="text" class="form-control" id="city_slug" name="city_slug" placeholder="Slug" />
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary"><b>Save</b></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- City Table -->
+    <div class="card">
+        <h3 class="card-header">City Table</h3>
+        <div class="table-responsive text-nowrap">
+            <table class="table" border="2px">
+                <thead>
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Country</th>
+                        <th>State</th>
+                        <th>City Name</th>
+                        <th>Slug</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city in cities %}
+                    <tr>
+                        <td><strong>{{ forloop.counter }}</strong></td>
+                        <td>{% if city.state %}{{ city.state.country.name }}{% else %}{{ city.country.name }}{% endif %}</td>
+                        <td>{% if city.state %}{{ city.state.name }}{% else %}No state{% endif %}</td>
+                        <td>{{ city.name }}</td>
+                        <td>{{ city.slug }}</td>
+                        <td>
+                            <button type="button"><a href="{% url 'city_update' city.slug %}" class="btn btn-sm btn-primary" style="color: black;">Edit</a></button>
+                            <button type="button"><a href="#" class="btn btn-sm btn-primary" style="color: black;">Delete</a></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { // Get references to the country dropdown, state dropdown, and state container elements
+            var countrySelect = document.getElementById('country_id');
+            var stateSelect = document.getElementById('state_id');
+            var stateContainer = document.getElementById('state-container');
+    
+            countrySelect.addEventListener('change', function() {  // Add an event listener to the country dropdown for change events
+                var countryId = this.value;   // Get the selected country's ID
+                var isStateAvailable = this.options[this.selectedIndex].getAttribute('data-state-available') === 'True';   // Check if the selected country has states available
+    
+                stateContainer.style.display = isStateAvailable ? 'block' : 'none';    // Show or hide the state container based on whether states are available
+                stateSelect.innerHTML = '<option value="">Select State</option>';   // Clear the state dropdown options
+    
+                if (isStateAvailable && countryId) { // If states are available and a country is selecte
+                    fetch('/get_states/', { // Fetch the states for the selected country
+                        method: 'POST',  // Use POST method for the request
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',  // Set content type
+                            'X-Requested-With': 'XMLHttpRequest'  // Indicate that this is an AJAX request
+                        },
+                        body: new URLSearchParams({ 'country_id': countryId }) // Send the country ID in the request body
+                    })
+                    .then(response => response.json())  // Parse the response as JSON
+                    .then(data => {
+                        data.forEach(state => {   // Iterate over the returned states and add them to the state dropdown
+                            stateSelect.innerHTML += `<option value="${state.id}">${state.name}</option>`;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching states:', error);   // Log any errors that occur during the fetch
+                    }); 
+                }
+            });
+        });
+    </script>
+    
+    
+</body>
+</html>

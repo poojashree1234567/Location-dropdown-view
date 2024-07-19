@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country</title>
+</head>
+
+<style>
+  /* Styles for the modal */
+  .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black with opacity */
+  }
+  .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%; /* Could be more or less, depending on screen size */
+  }
+  .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+  }
+</style>
+
+<body>
+    <div class="container-xxl flex-grow-1 container-p-y">
+        {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'success' %}
+            <div class="alert alert-success" role="alert">{{ message }}</div>
+          {% elif message.tags == 'error' %}
+            <div class="alert alert-danger alert-dismissible" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+            <!-- Country Form-->
+            <div class="row">
+                <div class="card mb-4">
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Country Form</h2>
+                  </div>
+                  <div class="card-body">
+                    <form action="{% url 'country' %}" enctype="multipart/form-data" method="post">
+                      {% csrf_token %}
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <label class="form-label" for="basic-icon-default-fullname"><b>Country Name:  </b></label>
+                            <input type="text" class="form-control" id="basic-icon-default-fullname" placeholder="Country name" name="country_name" required/>
+                          </div>
+                        </div><br>
+                        <div class="col-md-6">
+                          <label class="form-label" for="basic-icon-default-company"><b>Slug: </b></label>
+                            <input type="text" id="basic-icon-default-company" class="form-control" placeholder="Slug"  name="slug" required />
+                          </div>
+                      </div><br>
+                      <div class="row mb-3">
+                        <div class="col-md-6">
+                          <label class="form-label"><b>Country Code: </b></label>
+                            <input type="number" id="basic-icon-default-email" class="form-control" placeholder="Code" name="code" required/>
+                          </div>
+                        </div><br>
+                        <div class="col-md-6">
+                          <label for="formFile" class="form-label"><b>Flag: </b></label>
+                          <input class="form-control" type="file" id="formFile" name="flag" required>
+                        </div>
+                      </div><br>
+                      <div class="form-check mt-3 mb-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="defaultCheck1" name="state_available"/>
+                        <label class="form-check-label" for="state_available"> <b>State Available</b> </label>
+                      </div><br>
+                      <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!--/ Country Form -->
+
+              <!-- country table -->
+            
+            <table>
+                <div class="card">
+                    <h3 class="card-header">Country Table</h3>
+                    <div class="table-responsive text-nowrap">
+                      <table class="table" border="2px">
+                        <thead>
+                          <tr >
+                            <th>Sr. No.</th>
+                            <th>Country Name</th>
+                            <th>Flag</th>
+                            <th>Code</th>
+                            <th>Add State/City</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                          </thead>
+                        {% for item in countries %}
+                          <thead>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ item.name }}</td>
+                            <td style="height: 10px; width: 10px;">
+                                <img src="{{ item.flag.url }}" alt="flag" width="50" height="50">
+                            </td>
+                            <td>{{ item.code }}</td>
+                        {% if item.is_state_available %}
+                            <td><a href="{% url 'state' %}"><button type="button" class="btn btn-outline-primary">Add state</span></td></a>
+                        {% else %}
+                            <td><a href="{% url 'city' %}"><button type="button" class="btn btn-outline-primary">Add City</span></td></a>
+                        {% endif %}
+                            <td>
+                        {% if item.active %}
+                            <span>Active</span>
+                        {% else %}
+                            <span>Inactive</span>
+                        {% endif %}
+                            </a></td>
+                            <td>
+                              <button type="button"><a href="{% url 'country_update' item.slug %}" class="btn btn-sm btn-primary" style="color: black;">Edit</a></button>
+                              <button onclick="openModal('{{item.slug}}')">Delete</button>
+                            </td>
+                          </thead>
+                        {% endfor %}
+            </table>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal" style="display: none;">
+      <div class="modal-content">
+          <span class="close" onclick="closeModal()">&times;</span>
+          <div id="slug"></div>
+          <p>Are you sure you want to delete this Country?</p>
+          <form id="deleteForm" method="post">
+              {% csrf_token %}
+              <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+              <button  type="submit" class="btn btn-danger">Confirm Delete</button>
+          </form>
+      </div>
+  </div>
+
+    <!-- JavaScript for Modal -->
+    <script>
+        function openModal(slug) {
+            var modal = document.getElementById("deleteModal");
+            var slug_div = document.getElementById('slug')
+            slug_div.innerHTML = slug
+            console.log(slug_div, 'Pooja')
+            var deleteForm = document.getElementById('deleteForm');
+            deleteForm.setAttribute('action', `/country/${slug}/delete/`)
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("deleteModal");
+            modal.style.display = "none";
+        }
+
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById("deleteModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

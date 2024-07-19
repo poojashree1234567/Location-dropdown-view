@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Update Form</title>
+</head>
+<body>
+    <h2>City Update Form</h2>
+    <div class="card-body">
+        <form action="{% url 'city_update' cities.slug %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+                    <label class="form-label" for="country_id"><b>Country: </b></label>
+                    <input type="text" class="form-control" id="country_id" value="{{ countries.name }}" disabled>
+                    <input type="hidden" id="country_id" name="country_id" value="{{ countries.id }}">
+                </div><br>
+                <div class="col-6">
+                    <div class="col-md-6">
+                        <label class="form-label" for="state_id"><b>State: </b></label>
+                        <input type="text" class="form-control" id="state_id" value="{{ states.name }}" disabled>
+                        <input type="hidden" id="state_id" name="state_id" value="{{ states.id }}">
+                    </div>
+                </div>
+            </div><br>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="city_name"><b>City Name: </b></label>
+                    <input type="text" class="form-control" id="city_name" value="{{ cities.name }}" name="city_name" placeholder="City name" />
+                </div>
+                <br>
+                <div class="col-md-6">
+                    <label class="form-label" for="city_slug"><b>Slug: </b></label>
+                    <input type="text" class="form-control" id="city_slug" value="{{ cities.slug }}" name="city_slug" placeholder="Slug" />
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary"><b>Update</b></button>
+        </form>
+    </div>
+</body>
+</html>

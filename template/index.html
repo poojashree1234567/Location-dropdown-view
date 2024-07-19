@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cards</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px;">
+    <div class="cards" style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <div class="card" style="background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex: 1; min-width: 250px; max-width: 100%; display: flex; align-items: center; padding: 50px;">
+            <div class="text">
+                <a href="{% url 'country' %}" style="color: #007BFF; text-decoration: none; font-size: 30px;">Country</a>
+            </div>
+        </div>
+        <div class="card" style="background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex: 1; min-width: 250px; max-width: 100%; display: flex; align-items: center; padding: 50px;">
+            <div class="text" >
+                <a href="{% url 'state' %}" style="color: #007BFF; text-decoration: none; font-size: 30px; ">State</a>
+            </div>
+        </div>
+        <div class="card" style="background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex: 1; min-width: 250px; max-width: 100%; display: flex; align-items: center; padding: 50px;">
+            <div class="text">
+                <a href="{% url 'city' %}" style="color: #007BFF; text-decoration: none; font-size: 30px;">City</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

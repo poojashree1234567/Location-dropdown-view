@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Update Form</title>
+</head>
+<body>
+    <h2>Country Edit Form</h2>
+    <form action="{% url 'country_update' countries.slug %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="basic-icon-default-fullname"><b>Country Name:  </b></label>
+                <input type="text" class="form-control" id="basic-icon-default-fullname" value="{{ countries.name }}" placeholder="India" name="country_name"/>
+              </div>
+            </div><br>
+            <div class="col-md-6">
+              <label class="form-label" for="basic-icon-default-company"><b>Slug: </b></label>
+                <input type="text" id="basic-icon-default-company" class="form-control" value="{{ countries.slug }}" placeholder="Slug"  name="slug"  />
+              </div>
+          </div><br>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label"><b>Country Code: </b></label>
+                <input type="number" id="basic-icon-default-email" class="form-control" value="{{ countries.code }}" placeholder="Code" name="code" />
+              </div>
+            </div><br>
+            <div class="col-md-6">
+              <label for="formFile" class="form-label"><b>Flag: </b></label>
+              <input class="form-control" type="file" id="formFile" name="flag" value="{{ countries.flag }}">
+            </div>
+          </div><br>
+          <div class="form-check mt-3 mb-3">
+            <input class="form-check-input" type="checkbox" value="1" id="state_available" value="{{ countries.state_available }}" name="state_available" {% if countries.is_state_available %}checked{% endif %} >
+            <label class="form-check-label" for="state_available"> <b>State Available</b> </label>
+          </div><br>
+
+          <img src="{{ countries.flag.url }}" alt="flag" width="90" height="90"><br><br>
+          <button type="submit" class="btn btn-primary"><b>Update</b></button>
+        </form>
+      </div>
+    </form>
+</body>
+</html>
