@@ -14,12 +14,12 @@ urlpatterns = [
 #state path
     path('state',StateView.as_view(), name='state'),
     path('state_update/<str:slug>',StateUpdateView.as_view(), name='state_update'),
-    # path('state_delete/<str:slug>',StateDeleteView.as_view(), name='state_delete'),
+    path('state/<slug:slug>/delete/',StateDeleteView.as_view(), name='state_delete'),
 
 #city path
     path('city',CityView.as_view(), name='city'),
     path('city_update/<str:slug>',CityUpdateView.as_view(), name='city_update'),
-    # path('city_delete/<str:slug>',CityDeleteView.as_view(), name='city_delete'),
+    path('city/<slug:slug>/delete/',CityDeleteView.as_view(), name='city_delete'),
 
     path('get_states/', get_states, name='get_states'),
     ]

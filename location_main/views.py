@@ -84,7 +84,7 @@ class CountryUpdateView(View):
         return redirect('country')
     
 class CountryDeleteView(View):
-    def get(self, request,slug):
+    def post(self, request,slug):
         countries = Country.objects.get(slug = slug)
         countries.delete()
         return redirect('country')
@@ -104,8 +104,6 @@ class StateView(View):
         population = request.POST.get('population')
 
         countryobj = Country.objects.get(id=country_id)
-
-        print(country_id, state_name, state_slug, language, population)
 
         State.objects.create(
             country = countryobj,
@@ -146,6 +144,13 @@ class StateUpdateView(View):
         stateobj.save()
         return redirect('state')
  
+    
+class StateDeleteView(View):
+    def post(self, request,slug):
+        states = State.objects.get(slug = slug)
+        states.delete()
+        return redirect('state')
+    
 class CityView(View):
     def get(self, request):
         countries = Country.objects.all()
@@ -205,6 +210,11 @@ class CityUpdateView(View):
         cities.save()
         return redirect('city')
 
+class CityDeleteView(View):
+    def post(self, request,slug):
+        cities = City.objects.get(slug = slug)
+        cities.delete()
+        return redirect('city')
 
 @csrf_exempt
 def get_states(request):

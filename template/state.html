@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>State</title>
 </head>
+
+<style>
+  /* Styles for the modal */
+  .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black with opacity */
+  }
+  .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* 15% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 50%; /* Could be more or less, depending on screen size */
+      box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.1);
+      border-radius: 10px;
+  }
+  .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+  }
+  .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+  }
+</style>
+
+
 <body>
     <h2>State Form</h2>
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -25,24 +69,24 @@
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label" for="state_name"><b>State Name</b></label>
-                <input type="text" class="form-control" id="state_name" placeholder="State name" name="state_name" />
+                <input type="text" class="form-control" id="state_name" placeholder="State name" name="state_name" required/>
               </div>
             </div><br>
             <div class="col-md-6">
               <label class="form-label" for="slug"><b>Slug</b></label>
-                <input type="text" id="slug" class="form-control" placeholder="Slug" name="state_slug" />
+                <input type="text" id="slug" class="form-control" placeholder="Slug" name="state_slug" required />
               </div>
             </div>
           </div><br>
           <div class="row mb-3">
             <div class="col-md-6">
               <label class="form-label" for="language"><b>Language</b></label>
-                <input type="text" id="language" class="form-control" placeholder="Language" name="language" />
+                <input type="text" id="language" class="form-control" placeholder="Language" name="language" required />
               </div>
             </div><br>
             <div class="col-md-6">
               <label class="form-label" for="population"><b>Population</b></label>
-                <input type="number" id="population" class="form-control" placeholder="Population" name="population" />
+                <input type="number" id="population" class="form-control" placeholder="Population" name="population" required />
               </div>
             </div>
           </div><br>
@@ -76,12 +120,57 @@
           <td>{{ state.population }}</td>
           <td>
             <button type="button"><a href="{% url 'state_update' state.slug %}" class="btn btn-sm btn-primary" style="color: black;">Edit</a></button>
-            <button type="button"><a href="#" class="btn btn-sm btn-primary" style="color: black;">Delete</a></button>
+            <button type="button" onclick="openModal('{{ state.slug }}', '{{ state.name}}')">Delete</button>
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-    </div>
+  
+  
+    <!-- Delete confirmation modal -->
+    <div id="deleteModal" class="modal" style="display: none;">
+      <div class="modal-content">
+          <span class="close" onclick="closeModal()">&times;</span>
+          <!-- <div id="slug"></div> -->
+          <p>Are you sure you want to delete this State <strong id="stateName"></strong>?</p>
+          <form id="deleteForm" method="post">
+              {% csrf_token %}
+              <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+              <button  type="submit" class="btn btn-danger">Confirm Delete</button>
+          </form>
+      </div>
+  </div>
+
+    <!-- JavaScript for Modal -->
+    <script>
+        function openModal(slug, name) {
+            var modal = document.getElementById("deleteModal");
+            // var slug_div = document.getElementById('slug')
+            // slug_div.innerHTML = slug
+            // console.log(slug_div, 'Pooja')
+            var deleteForm = document.getElementById('deleteForm');
+            var stateName = document.getElementById('stateName');
+
+            deleteForm.setAttribute('action', `/state/${slug}/delete/`)
+            stateName.textContent = name;
+
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("deleteModal");
+            modal.style.display = "none";
+        }
+
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById("deleteModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+
 </body>
 </html>
